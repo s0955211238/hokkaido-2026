@@ -1710,7 +1710,15 @@
           </div>
           <h2 class="section-title">旅遊記帳</h2>
         </div>
-        <button type="button" class="btn-mini" id="clearExpensesBtn">清空紀錄</button>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <button type="button" class="btn-mini" id="exportExcelBtn" style="background-color: var(--bamboo); display:inline-flex; align-items:center; gap:4px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 4V15M12 15L7 10M12 15L17 10M5 19H19" stroke="#3E3A39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>匯出 Excel</span>
+          </button>
+          <button type="button" class="btn-mini" id="clearExpensesBtn">清空紀錄</button>
+        </div>
       </div>
 
       <div class="card">
@@ -2620,6 +2628,218 @@
         renderExpenses();
       }
     });
+
+    /* ===== Native Zero-Dependency XLSX Exporter ===== */
+    function xmlEscape(val) {
+      return String(val ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
+
+    function colLetter(n) {
+      let s = '';
+      let num = n + 1;
+      while (num > 0) {
+        const mod = (num - 1) % 26;
+        s = String.fromCharCode(65 + mod) + s;
+        num = Math.floor((num - 1) / 26);
+      }
+      return s;
+    }
+
+    function crc32(bytes) {
+      let crc = 0xFFFFFFFF;
+      for (let i = 0; i < bytes.length; i++) {
+        crc ^= bytes[i];
+        for (let j = 0; j < 8; j++) {
+          crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+        }
+      }
+      return (crc ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    function buildZip(files) {
+      const encoder = new TextEncoder();
+      const localParts = [];
+      const centralParts = [];
+      let offset = 0;
+
+      files.forEach((f) => {
+        const nameBytes = encoder.encode(f.name);
+        const dataBytes = encoder.encode(f.content);
+        const crc = crc32(dataBytes);
+
+        const localHeader = new Uint8Array(30 + nameBytes.length);
+        const lv = new DataView(localHeader.buffer);
+        lv.setUint32(0, 0x04034b50, true);
+        lv.setUint16(4, 20, true);
+        lv.setUint16(6, 0x0800, true);
+        lv.setUint16(8, 0, true);
+        lv.setUint16(10, 0, true);
+        lv.setUint16(12, 0, true);
+        lv.setUint32(14, crc, true);
+        lv.setUint32(18, dataBytes.length, true);
+        lv.setUint32(22, dataBytes.length, true);
+        lv.setUint16(26, nameBytes.length, true);
+        lv.setUint16(28, 0, true);
+        localHeader.set(nameBytes, 30);
+
+        localParts.push(localHeader, dataBytes);
+
+        const centralHeader = new Uint8Array(46 + nameBytes.length);
+        const cv = new DataView(centralHeader.buffer);
+        cv.setUint32(0, 0x02014b50, true);
+        cv.setUint16(4, 20, true);
+        cv.setUint16(6, 20, true);
+        cv.setUint16(8, 0x0800, true);
+        cv.setUint16(10, 0, true);
+        cv.setUint16(12, 0, true);
+        cv.setUint16(14, 0, true);
+        cv.setUint32(16, crc, true);
+        cv.setUint32(20, dataBytes.length, true);
+        cv.setUint32(24, dataBytes.length, true);
+        cv.setUint16(28, nameBytes.length, true);
+        cv.setUint16(30, 0, true);
+        cv.setUint16(32, 0, true);
+        cv.setUint16(34, 0, true);
+        cv.setUint16(36, 0, true);
+        cv.setUint32(38, 0, true);
+        cv.setUint32(42, offset, true);
+        centralHeader.set(nameBytes, 46);
+
+        centralParts.push(centralHeader);
+        offset += localHeader.length + dataBytes.length;
+      });
+
+      let centralSize = 0;
+      centralParts.forEach((p) => { centralSize += p.length; });
+
+      const eocd = new Uint8Array(22);
+      const ev = new DataView(eocd.buffer);
+      ev.setUint32(0, 0x06054b50, true);
+      ev.setUint16(4, 0, true);
+      ev.setUint16(6, 0, true);
+      ev.setUint16(8, files.length, true);
+      ev.setUint16(10, files.length, true);
+      ev.setUint32(12, centralSize, true);
+      ev.setUint32(16, offset, true);
+      ev.setUint16(20, 0, true);
+
+      return new Blob([...localParts, ...centralParts, eocd], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+    }
+
+    function exportExpensesToExcel() {
+      if (expenses.length === 0) {
+        alert('目前尚無記帳紀錄可匯出。');
+        return;
+      }
+
+      let totalJpy = 0;
+      let totalTwd = 0;
+      const rows = [
+        ['日期', '分類', '消費項目', '幣別', '原幣金額', '匯率(JPY→TWD)', '折合台幣(TWD)']
+      ];
+
+      expenses.slice().reverse().forEach((item) => {
+        const isJpy = item.currency === 'JPY';
+        const twd = isJpy ? Math.round(item.amount * fxRate) : Math.round(item.amount);
+        if (isJpy) totalJpy += item.amount;
+        totalTwd += isJpy ? item.amount * fxRate : item.amount;
+
+        rows.push([
+          item.day || '',
+          EXPENSE_CATEGORIES[item.category] || '其他',
+          item.name || '',
+          item.currency || 'JPY',
+          Number(item.amount),
+          isJpy ? Number(fxRate) : 1,
+          Number(twd)
+        ]);
+      });
+
+      rows.push([]);
+      rows.push(['', '', '日幣花費總計（JPY）', 'JPY', Math.round(totalJpy), '', '']);
+      rows.push(['', '', '折合台幣總計（TWD）', 'TWD', '', '', Math.round(totalTwd)]);
+
+      const sheetRowsXml = rows.map((row, rIdx) => {
+        const cellsXml = row.map((val, cIdx) => {
+          if (val === '' || val === null || val === undefined) return '';
+          const ref = `${colLetter(cIdx)}${rIdx + 1}`;
+          if (typeof val === 'number' && !isNaN(val)) {
+            return `<c r="${ref}" t="n"><v>${val}</v></c>`;
+          }
+          return `<c r="${ref}" t="inlineStr"><is><t>${xmlEscape(val)}</t></is></c>`;
+        }).join('');
+        return `<row r="${rIdx + 1}">${cellsXml}</row>`;
+      }).join('');
+
+      const sheetXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <cols>
+    <col min="1" max="1" width="16" customWidth="1"/>
+    <col min="2" max="2" width="10" customWidth="1"/>
+    <col min="3" max="3" width="28" customWidth="1"/>
+    <col min="4" max="4" width="8" customWidth="1"/>
+    <col min="5" max="5" width="14" customWidth="1"/>
+    <col min="6" max="6" width="16" customWidth="1"/>
+    <col min="7" max="7" width="16" customWidth="1"/>
+  </cols>
+  <sheetData>${sheetRowsXml}</sheetData>
+</worksheet>`;
+
+      const workbookXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>
+    <sheet name="北海道記帳" sheetId="1" r:id="rId1"/>
+  </sheets>
+</workbook>`;
+
+      const workbookRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+</Relationships>`;
+
+      const rootRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`;
+
+      const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+</Types>`;
+
+      const blob = buildZip([
+        { name: '[Content_Types].xml', content: contentTypesXml },
+        { name: '_rels/.rels', content: rootRelsXml },
+        { name: 'xl/workbook.xml', content: workbookXml },
+        { name: 'xl/_rels/workbook.xml.rels', content: workbookRelsXml },
+        { name: 'xl/worksheets/sheet1.xml', content: sheetXml }
+      ]);
+
+      const now = new Date();
+      const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+      const filename = `2026冬季北海道記帳_${stamp}.xlsx`;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    document.getElementById('exportExcelBtn').addEventListener('click', exportExpensesToExcel);
 
     function renderExpenses() {
       let totalJpy = 0;
