@@ -394,21 +394,24 @@
 
     .weather-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      width: 100%;
     }
 
     .weather-day-box {
       background-color: var(--bg);
       border: 2.5px solid var(--ink);
-      border-radius: 18px;
-      padding: 10px 6px;
+      border-radius: 16px;
+      padding: 8px 4px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
       gap: 4px;
+      min-width: 0;
+      overflow: hidden;
     }
 
     .weather-day-box.snowy {
@@ -416,29 +419,32 @@
     }
 
     .weather-day-date {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       color: var(--ink-muted);
-      white-space: nowrap;
+      line-height: 1.25;
+      white-space: pre-line;
     }
 
     .weather-day-desc {
-      font-size: 0.84rem;
+      font-size: 0.8rem;
       line-height: 1.2;
     }
 
     .weather-day-temp {
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       white-space: nowrap;
     }
 
     .weather-metric-pill {
-      display: inline-block;
+      display: block;
+      width: 100%;
       border: 2px solid var(--ink);
-      border-radius: var(--radius-pill);
-      padding: 1px 7px;
-      font-size: 0.72rem;
-      white-space: nowrap;
+      border-radius: 10px;
+      padding: 2px 3px;
+      font-size: 0.68rem;
+      line-height: 1.2;
       background-color: var(--paper);
+      word-break: keep-all;
     }
 
     .weather-metric-pill.snow {
@@ -3233,16 +3239,16 @@
           const snowCm = Number(d.snowfall_sum[i] ?? 0);
           const hasSnow = info.isSnow || snowCm > 0;
 
-          const probLabel = hasSnow ? `降雪機率 ${precipProb}%` : `降水機率 ${precipProb}%`;
-          const snowLabel = snowCm > 0 ? `預估降雪 ${snowCm.toFixed(1)} cm` : '降雪量 0 cm';
+          const probLabel = `降雪機率 ${precipProb}%`;
+          const snowLabel = `降雪 ${snowCm.toFixed(1)} cm`;
 
           return `
             <div class="weather-day-box ${hasSnow ? 'snowy' : ''}">
-              <span class="weather-day-date">${dayLabels[i]} ${mmdd} ${wk}</span>
+              <span class="weather-day-date">${dayLabels[i]} ${mmdd}\n${wk}</span>
               ${getWeatherSvg(hasSnow ? 'snow' : info.type)}
               <strong class="weather-day-desc">${escapeHtml(info.label)}</strong>
               <div class="weather-day-temp">${tMax}° / ${tMin}°</div>
-              <span class="weather-metric-pill ${hasSnow ? 'snow' : (precipProb >= 40 ? 'rain' : '')}">${probLabel}</span>
+              <span class="weather-metric-pill ${hasSnow || precipProb >= 40 ? 'snow' : ''}">${probLabel}</span>
               <span class="weather-metric-pill ${snowCm > 0 ? 'snow' : ''}">${snowLabel}</span>
             </div>
           `;
