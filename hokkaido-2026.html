@@ -1570,7 +1570,7 @@
     /* ===== Storage Keys ===== */
     const STORAGE_KEYS = {
       itinerary: 'hokkaido2026_itinerary_v1',
-      flights: 'hokkaido2026_flights_v1',
+      flights: 'hokkaido2026_flights_v2',
       checklists: 'hokkaido2026_checklists_v1',
       reducedMotion: 'hokkaido2026_reduced_motion_v1'
     };
@@ -1581,29 +1581,29 @@
         id: 'outbound',
         direction: '去程航班',
         date: '12/13（週日）',
-        code: '航班編號待補',
+        code: '台灣虎航 IT236',
         depCode: 'TPE',
         depName: '臺灣桃園國際機場第一航廈',
-        depTime: '06:40 起飛',
+        depTime: '06:45 起飛',
         arrCode: 'HKD',
         arrName: '函館機場',
-        arrTime: '10:10 抵達',
-        duration: '約 3 時 30 分',
-        note: '04:40 抵達桃園機場第一航廈辦理報到。'
+        arrTime: '11:10 抵達',
+        duration: '約 3 時 25 分',
+        note: '04:40 抵達桃園機場第一航廈辦理報到（2026 冬季班表，均為當地時間）。'
       },
       {
         id: 'inbound',
         direction: '回程航班',
         date: '12/19（週六）',
-        code: '航班編號待補',
+        code: '台灣虎航 IT235',
         depCode: 'CTS',
         depName: '新千歲機場・國際線',
-        depTime: '09:31 到機場',
+        depTime: '11:55 起飛',
         arrCode: 'TPE',
         arrName: '臺灣桃園國際機場第一航廈',
-        arrTime: '待確認抵達',
-        duration: '回程返家',
-        note: 'PDF 行程時間未標註實際飛行時數，請依電子機票確認起降時間。'
+        arrTime: '15:35 抵達',
+        duration: '約 4 時 40 分',
+        note: '建議 09:30 左右抵達新千歲機場國際線辦理報到（2026 冬季班表，均為當地時間）。'
       }
     ];
 
@@ -1804,7 +1804,7 @@
     });
 
     /* ===== Countdown Timer ===== */
-    const TRIP_START = new Date('2026-12-13T06:40:00+08:00');
+    const TRIP_START = new Date('2026-12-13T06:45:00+08:00');
     const TRIP_END = new Date('2026-12-19T23:59:59+08:00');
 
     function updateCountdown() {
