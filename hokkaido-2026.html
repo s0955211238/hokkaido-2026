@@ -368,18 +368,22 @@
     }
 
     .weather-presets {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 5px;
       margin-bottom: 12px;
+      width: 100%;
     }
 
     .weather-preset-btn {
       background-color: var(--bg);
       border: 2px solid var(--ink);
-      border-radius: var(--radius-pill);
-      padding: 3px 10px;
-      font-size: 0.78rem;
+      border-radius: 12px;
+      padding: 5px 2px;
+      font-size: 0.74rem;
+      line-height: 1.1;
+      text-align: center;
+      white-space: nowrap;
       box-shadow: 0 2px 0 var(--ink);
       transition: transform 0.12s ease, background-color 0.12s ease;
     }
@@ -1770,14 +1774,14 @@
               <div class="weather-loc-sub" id="weatherLocSub">正在取得定位與氣象資料...</div>
             </div>
           </div>
-          <button type="button" class="btn-mini" id="weatherLocateBtn" style="background-color: var(--sky);">目前定位</button>
         </div>
 
-        <div class="weather-presets" id="weatherPresets" aria-label="快速切換城市天氣">
+        <div class="weather-presets" id="weatherPresets" aria-label="快速切換定位與城市天氣">
+          <button type="button" class="weather-preset-btn" id="weatherLocateBtn" data-city="current">定位</button>
           <button type="button" class="weather-preset-btn" data-city="hakodate">函館</button>
-          <button type="button" class="weather-preset-btn" data-city="toya">洞爺湖</button>
+          <button type="button" class="weather-preset-btn" data-city="toya">洞爺</button>
           <button type="button" class="weather-preset-btn" data-city="sapporo">札幌</button>
-          <button type="button" class="weather-preset-btn" data-city="biei">美瑛富良野</button>
+          <button type="button" class="weather-preset-btn" data-city="biei">美瑛</button>
           <button type="button" class="weather-preset-btn" data-city="otaru">小樽</button>
         </div>
 
@@ -3212,7 +3216,7 @@
       contentEl.innerHTML = '<div class="weather-msg">載入氣象預報中...</div>';
 
       try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,snowfall_sum&timezone=auto&forecast_days=3`;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,weather_code&hourly=snowfall,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,snowfall_sum&timezone=auto&forecast_days=3`;
         const res = await fetch(url);
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
@@ -3225,9 +3229,11 @@
         titleEl.textContent = currTemp !== null
           ? `${displayName}・目前 ${currTemp}°C（${currInfo.label}）`
           : `${displayName}・未來 3 天預報`;
-        subEl.textContent = subNote || '資料來源：Open-Meteo 即時預報';
+        subEl.textContent = subNote || '整合 JMA 數值模式・僅計算降雪時段機率';
 
         const d = data.daily;
+        const h = data.hourly;
+
         const cardsHtml = d.time.map((dateStr, i) => {
           const dt = new Date(dateStr + 'T00:00:00');
           const mmdd = `${dt.getMonth() + 1}/${dt.getDate()}`;
@@ -3235,11 +3241,25 @@
           const info = getWeatherInfo(d.weather_code[i]);
           const tMax = Math.round(d.temperature_2m_max[i]);
           const tMin = Math.round(d.temperature_2m_min[i]);
-          const precipProb = d.precipitation_probability_max[i] ?? 0;
           const snowCm = Number(d.snowfall_sum[i] ?? 0);
-          const hasSnow = info.isSnow || snowCm > 0;
 
-          const probLabel = `降雪機率 ${precipProb}%`;
+          // Compute snow-only probability from hourly snow slots (exclude rain-only hours)
+          let snowProb = 0;
+          if (h && Array.isArray(h.time)) {
+            for (let idx = 0; idx < h.time.length; idx++) {
+              if (!h.time[idx].startsWith(dateStr)) continue;
+              const hCode = h.weather_code ? h.weather_code[idx] : 0;
+              const hSnow = h.snowfall ? Number(h.snowfall[idx] || 0) : 0;
+              const isSnowHour = hSnow > 0 || getWeatherInfo(hCode).isSnow;
+              if (isSnowHour) {
+                const p = h.precipitation_probability ? Number(h.precipitation_probability[idx] || 0) : 0;
+                if (p > snowProb) snowProb = p;
+              }
+            }
+          }
+
+          const hasSnow = info.isSnow || snowCm > 0 || snowProb > 0;
+          const probLabel = `降雪機率 ${snowProb}%`;
           const snowLabel = `降雪 ${snowCm.toFixed(1)} cm`;
 
           return `
@@ -3248,7 +3268,7 @@
               ${getWeatherSvg(hasSnow ? 'snow' : info.type)}
               <strong class="weather-day-desc">${escapeHtml(info.label)}</strong>
               <div class="weather-day-temp">${tMax}° / ${tMin}°</div>
-              <span class="weather-metric-pill ${hasSnow || precipProb >= 40 ? 'snow' : ''}">${probLabel}</span>
+              <span class="weather-metric-pill ${snowProb > 0 ? 'snow' : ''}">${probLabel}</span>
               <span class="weather-metric-pill ${snowCm > 0 ? 'snow' : ''}">${snowLabel}</span>
             </div>
           `;
@@ -3273,7 +3293,7 @@
     }
 
     function loadCurrentLocationWeather() {
-      setActiveWeatherPreset('');
+      setActiveWeatherPreset('current');
       const subEl = document.getElementById('weatherLocSub');
 
       if (!('geolocation' in navigator)) {
@@ -3289,25 +3309,29 @@
           const lat = pos.coords.latitude;
           const lon = pos.coords.longitude;
           const place = await resolvePlaceName(lat, lon);
-          fetchWeatherByCoords(lat, lon, `目前定位（${place}）`, '依您的即時 GPS 定位更新');
+          setActiveWeatherPreset('current');
+          fetchWeatherByCoords(lat, lon, `定位（${place}）`, '依您的 GPS 定位・僅計算降雪時段機率');
         },
         () => {
           setActiveWeatherPreset('hakodate');
           const c = WEATHER_CITIES.hakodate;
-          fetchWeatherByCoords(c.lat, c.lon, c.name, '未取得定位權限，顯示函館預報（可點目前定位重試）');
+          fetchWeatherByCoords(c.lat, c.lon, c.name, '未取得定位權限，顯示函館預報（點「定位」重試）');
         },
         { enableHighAccuracy: false, timeout: 7000, maximumAge: 300000 }
       );
     }
 
-    document.getElementById('weatherLocateBtn').addEventListener('click', loadCurrentLocationWeather);
     document.querySelectorAll('.weather-preset-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const key = btn.dataset.city;
+        if (key === 'current') {
+          loadCurrentLocationWeather();
+          return;
+        }
         const c = WEATHER_CITIES[key];
         if (!c) return;
         setActiveWeatherPreset(key);
-        fetchWeatherByCoords(c.lat, c.lon, c.name, '北海道目的地即時預報');
+        fetchWeatherByCoords(c.lat, c.lon, c.name, '整合 JMA 數值模式・僅計算降雪時段機率');
       });
     });
 
