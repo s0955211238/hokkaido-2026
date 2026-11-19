@@ -1110,6 +1110,188 @@
       margin-top: 16px;
     }
 
+    /* ===== Expenses Tracker ===== */
+    .expense-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .expense-stat-box {
+      border: var(--border);
+      border-radius: 20px;
+      padding: 12px 10px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .expense-stat-box.jpy { background-color: var(--yellow); }
+    .expense-stat-box.twd { background-color: var(--coral); }
+
+    .expense-stat-label {
+      display: block;
+      font-size: 0.82rem;
+      margin-bottom: 2px;
+    }
+
+    .expense-stat-val {
+      display: block;
+      font-size: 1.35rem;
+      line-height: 1.2;
+      word-break: break-all;
+    }
+
+    .fx-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background-color: var(--bg);
+      border: 2.5px solid var(--ink);
+      border-radius: 16px;
+      padding: 8px 12px;
+      margin-bottom: 14px;
+      font-size: 0.86rem;
+      flex-wrap: wrap;
+    }
+
+    .fx-input-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .fx-input {
+      width: 82px;
+      background-color: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      padding: 3px 8px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .expense-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .expense-form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .expense-filter-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 2px 0 10px;
+      margin-top: 14px;
+      scrollbar-width: none;
+    }
+
+    .expense-filter-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-pill {
+      flex: 0 0 auto;
+      background-color: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-pill);
+      padding: 4px 12px;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    .filter-pill.active {
+      background-color: var(--sky);
+    }
+
+    .expense-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .expense-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background-color: var(--bg);
+      border: 2.5px solid var(--ink);
+      border-radius: 16px;
+      padding: 10px 12px;
+    }
+
+    .expense-item-left {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .expense-item-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+      flex-wrap: wrap;
+    }
+
+    .exp-cat-tag {
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-pill);
+      padding: 0 8px;
+      font-size: 0.74rem;
+    }
+
+    .exp-cat-food { background-color: var(--coral); }
+    .exp-cat-transport { background-color: var(--sky); }
+    .exp-cat-shopping { background-color: var(--yellow); }
+    .exp-cat-ticket { background-color: var(--bamboo); }
+    .exp-cat-hotel { background-color: var(--sky); }
+    .exp-cat-other { background-color: var(--paper); }
+
+    .exp-day-tag {
+      font-size: 0.76rem;
+      color: var(--ink-muted);
+    }
+
+    .expense-item-name {
+      font-size: 0.96rem;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .expense-item-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .expense-amount-col {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .expense-orig {
+      display: block;
+      font-size: 0.96rem;
+      line-height: 1.2;
+    }
+
+    .expense-conv {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--ink-muted);
+    }
+
     /* ===== Footer ===== */
     .footer {
       text-align: center;
@@ -1230,6 +1412,7 @@
         <a class="nav-link" href="#itinerary">行程</a>
         <a class="nav-link" href="#hotels">住宿</a>
         <a class="nav-link" href="#checklists">清單</a>
+        <a class="nav-link" href="#expenses">記帳</a>
       </nav>
     </div>
   </header>
@@ -1515,6 +1698,82 @@
       <div class="list-panel" id="listPanel"></div>
     </section>
 
+    <!-- Expenses Tracker Section -->
+    <section id="expenses" class="section">
+      <div class="section-header">
+        <div class="section-title-group">
+          <div class="section-icon" style="background-color: var(--yellow);">
+            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+              <circle cx="14" cy="14" r="10" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
+              <path d="M10 9L14 14L18 9M14 14V20M10 15H18M10 18H18" stroke="#3E3A39" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2 class="section-title">旅遊記帳</h2>
+        </div>
+        <button type="button" class="btn-mini" id="clearExpensesBtn">清空紀錄</button>
+      </div>
+
+      <div class="card">
+        <div class="expense-summary-grid">
+          <div class="expense-stat-box jpy">
+            <span class="expense-stat-label">日幣花費總計（JPY）</span>
+            <strong class="expense-stat-val" id="totalJpy">¥0</strong>
+          </div>
+          <div class="expense-stat-box twd">
+            <span class="expense-stat-label">折合台幣總計（TWD）</span>
+            <strong class="expense-stat-val" id="totalTwd">NT$0</strong>
+          </div>
+        </div>
+
+        <div class="fx-bar">
+          <span>日幣匯率換算設定</span>
+          <label class="fx-input-group" for="fxRateInput">
+            <span>1 JPY =</span>
+            <input type="number" id="fxRateInput" class="fx-input" step="0.001" min="0.01" value="0.215" />
+            <span>TWD</span>
+          </label>
+        </div>
+
+        <form id="expenseForm">
+          <div class="expense-form-grid">
+            <input type="text" id="expName" class="input-field full" placeholder="消費項目（例：根室花丸壽司、蟹座）" required />
+            <input type="number" id="expAmount" class="input-field" placeholder="金額" min="1" step="any" inputmode="decimal" required />
+            <select id="expCurrency" class="input-field" aria-label="選擇幣別">
+              <option value="JPY">JPY 日幣（¥）</option>
+              <option value="TWD">TWD 台幣（NT$）</option>
+            </select>
+            <select id="expCategory" class="input-field" aria-label="選擇分類">
+              <option value="food">餐飲美食</option>
+              <option value="transport">交通票券</option>
+              <option value="shopping">購物伴手禮</option>
+              <option value="ticket">景點門票</option>
+              <option value="hotel">住宿溫泉</option>
+              <option value="other">其他雜支</option>
+            </select>
+            <select id="expDay" class="input-field" aria-label="選擇日期">
+              <option value="Day 1（12/13）">Day 1（12/13）</option>
+              <option value="Day 2（12/14）">Day 2（12/14）</option>
+              <option value="Day 3（12/15）">Day 3（12/15）</option>
+              <option value="Day 4（12/16）">Day 4（12/16）</option>
+              <option value="Day 5（12/17）">Day 5（12/17）</option>
+              <option value="Day 6（12/18）">Day 6（12/18）</option>
+              <option value="Day 7（12/19）">Day 7（12/19）</option>
+              <option value="出發前">出發前預付</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 5V19M5 12H19" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <span>記一筆</span>
+          </button>
+        </form>
+
+        <div class="expense-filter-row" id="expenseFilters" role="tablist" aria-label="依分類篩選記帳明細"></div>
+        <ul class="expense-list" id="expenseList"></ul>
+      </div>
+    </section>
+
     <footer class="footer">
       <p>2026 冬季北海道旅遊手冊・所有行程修改與清單勾選皆自動儲存於本機瀏覽器</p>
     </footer>
@@ -1618,7 +1877,9 @@
     const STORAGE_KEYS = {
       itinerary: 'hokkaido2026_itinerary_v1',
       flights: 'hokkaido2026_flights_v3',
-      checklists: 'hokkaido2026_checklists_v1'
+      checklists: 'hokkaido2026_checklists_v1',
+      expenses: 'hokkaido2026_expenses_v1',
+      fxRate: 'hokkaido2026_fx_v1'
     };
 
     /* ===== Default Data (Extracted from PDF) ===== */
@@ -2300,6 +2561,148 @@
       });
     });
 
+    /* ===== Expenses Tracker ===== */
+    const EXPENSE_CATEGORIES = {
+      all: '全部',
+      food: '餐飲',
+      transport: '交通',
+      shopping: '購物',
+      ticket: '門票',
+      hotel: '住宿',
+      other: '其他'
+    };
+
+    let expenses = loadData(STORAGE_KEYS.expenses, []);
+    let fxRate = Number(localStorage.getItem(STORAGE_KEYS.fxRate)) || 0.215;
+    let currentExpenseFilter = 'all';
+
+    const fxRateInput = document.getElementById('fxRateInput');
+    fxRateInput.value = fxRate;
+
+    fxRateInput.addEventListener('input', () => {
+      const val = parseFloat(fxRateInput.value);
+      if (!isNaN(val) && val > 0) {
+        fxRate = val;
+        try { localStorage.setItem(STORAGE_KEYS.fxRate, String(fxRate)); } catch (e) {}
+        renderExpenses();
+      }
+    });
+
+    document.getElementById('expenseForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('expName').value.trim();
+      const amount = parseFloat(document.getElementById('expAmount').value);
+      const currency = document.getElementById('expCurrency').value;
+      const category = document.getElementById('expCategory').value;
+      const day = document.getElementById('expDay').value;
+
+      if (!name || isNaN(amount) || amount <= 0) return;
+
+      expenses.unshift({
+        id: 'e_' + Date.now(),
+        name,
+        amount,
+        currency,
+        category,
+        day
+      });
+      saveData(STORAGE_KEYS.expenses, expenses);
+      document.getElementById('expName').value = '';
+      document.getElementById('expAmount').value = '';
+      renderExpenses();
+    });
+
+    document.getElementById('clearExpensesBtn').addEventListener('click', () => {
+      if (expenses.length === 0) return;
+      if (confirm('確定要清空所有記帳紀錄嗎？此動作無法復原。')) {
+        expenses = [];
+        saveData(STORAGE_KEYS.expenses, expenses);
+        renderExpenses();
+      }
+    });
+
+    function renderExpenses() {
+      let totalJpy = 0;
+      let totalTwd = 0;
+
+      expenses.forEach((item) => {
+        if (item.currency === 'JPY') {
+          totalJpy += item.amount;
+          totalTwd += item.amount * fxRate;
+        } else {
+          totalTwd += item.amount;
+        }
+      });
+
+      document.getElementById('totalJpy').textContent = `¥${Math.round(totalJpy).toLocaleString('zh-TW')}`;
+      document.getElementById('totalTwd').textContent = `NT$${Math.round(totalTwd).toLocaleString('zh-TW')}`;
+
+      const filtersEl = document.getElementById('expenseFilters');
+      filtersEl.innerHTML = Object.entries(EXPENSE_CATEGORIES).map(([key, label]) => {
+        const count = key === 'all' ? expenses.length : expenses.filter((i) => i.category === key).length;
+        return `
+          <button type="button" class="filter-pill ${currentExpenseFilter === key ? 'active' : ''}" data-exp-filter="${key}" role="tab" aria-selected="${currentExpenseFilter === key}">
+            ${label}（${count}）
+          </button>
+        `;
+      }).join('');
+
+      filtersEl.querySelectorAll('[data-exp-filter]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          currentExpenseFilter = btn.dataset.expFilter;
+          renderExpenses();
+        });
+      });
+
+      const listEl = document.getElementById('expenseList');
+      const filtered = currentExpenseFilter === 'all'
+        ? expenses
+        : expenses.filter((i) => i.category === currentExpenseFilter);
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<li style="text-align:center;color:var(--ink-muted);padding:16px 0;font-size:0.9rem;">尚無消費紀錄，在上方輸入金額即可開始記帳。</li>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map((item) => {
+        const isJpy = item.currency === 'JPY';
+        const origText = isJpy
+          ? `¥${Math.round(item.amount).toLocaleString('zh-TW')}`
+          : `NT$${Math.round(item.amount).toLocaleString('zh-TW')}`;
+        const convText = isJpy
+          ? `約 NT$${Math.round(item.amount * fxRate).toLocaleString('zh-TW')}`
+          : '台幣支出';
+        const catLabel = EXPENSE_CATEGORIES[item.category] || '其他';
+
+        return `
+          <li class="expense-item">
+            <div class="expense-item-left">
+              <div class="expense-item-tags">
+                <span class="exp-cat-tag exp-cat-${escapeHtml(item.category)}">${escapeHtml(catLabel)}</span>
+                <span class="exp-day-tag">${escapeHtml(item.day)}</span>
+              </div>
+              <div class="expense-item-name">${escapeHtml(item.name)}</div>
+            </div>
+            <div class="expense-item-right">
+              <div class="expense-amount-col">
+                <strong class="expense-orig">${origText}</strong>
+                <span class="expense-conv">${convText}</span>
+              </div>
+              <button type="button" class="icon-btn danger" data-del-exp="${escapeHtml(item.id)}" aria-label="刪除此筆紀錄">刪</button>
+            </div>
+          </li>
+        `;
+      }).join('');
+
+      listEl.querySelectorAll('[data-del-exp]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          expenses = expenses.filter((i) => i.id !== btn.dataset.delExp);
+          saveData(STORAGE_KEYS.expenses, expenses);
+          renderExpenses();
+        });
+      });
+    }
+
     /* ===== Helper ===== */
     function escapeHtml(str) {
       return String(str ?? '')
@@ -2315,6 +2718,7 @@
     renderDayTabs(false);
     renderTimeline(false);
     renderChecklist(false);
+    renderExpenses();
   </script>
 </body>
 </html>
