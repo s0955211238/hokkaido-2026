@@ -670,6 +670,39 @@
       flex-wrap: wrap;
     }
 
+    .stop-meta-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .map-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      color: var(--ink);
+      background-color: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-pill);
+      padding: 2px 10px;
+      font-size: 0.8rem;
+      box-shadow: 0 2px 0 var(--ink);
+      transition: transform 0.12s ease, background-color 0.12s ease;
+    }
+
+    .map-btn:hover,
+    .map-btn:focus-visible {
+      background-color: var(--sky);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .map-btn:active {
+      transform: translateY(1px);
+    }
+
     /* ===== Transport Tags ===== */
     .transport-tag {
       display: inline-flex;
@@ -1941,6 +1974,39 @@
       return icons[type] || icons.walk;
     }
 
+    /* ===== Google Maps URL Builder ===== */
+    const MAP_QUERY_OVERRIDES = {
+      'Angelique Voyage': 'Angelique Voyage 函館',
+      '幸運小丑漢堡 碼頭末廣店': '幸運小丑漢堡 碼頭末廣店 函館',
+      '津津軒拉麵': '津津軒拉麵 函館',
+      '五稜郭公園': '五稜郭公園 函館',
+      '六花亭 五稜郭店': '六花亭 五稜郭店 函館',
+      'Soup Curry Begirama': 'Soup Curry Begirama 函館',
+      '八幡坂': '八幡坂 函館',
+      '金森紅磚倉庫': '金森紅磚倉庫 函館',
+      '成吉思汗 羊羊亭': '成吉思汗 羊羊亭 函館',
+      '仙堂庵': '仙堂庵 洞爺湖',
+      '湖景飯店 洞爺乃之風': 'The Lake View TOYA Nonokaze Resort 洞爺湖',
+      '大通公園': '大通公園 札幌',
+      '蟹座': '蟹座 札幌',
+      'Christmas tree（美瑛聖誕樹）': '美瑛 聖誕樹之木',
+      '四季彩之丘': '四季彩之丘 美瑛',
+      '白金青池': '白金青池 美瑛',
+      '森林精靈露台': '森林精靈露台 富良野',
+      '狸小路商店街': '狸小路商店街 札幌',
+      '串鳥 中央本店': '串鳥 中央本店 札幌'
+    };
+
+    function getGoogleMapsUrl(name) {
+      const cleanName = String(name || '').trim();
+      let query = MAP_QUERY_OVERRIDES[cleanName] || cleanName;
+      const hasRegion = /桃園|北海道|函館|洞爺|札幌|小樽|美瑛|富良野|新千歲|Toya|Hokkaido|Sapporo|Hakodate|Otaru/i.test(query);
+      if (!hasRegion && query) {
+        query = `${query} 北海道`;
+      }
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+
     /* ===== Itinerary Rendering ===== */
     function renderDayTabs(animateActive = false) {
       const wrap = document.getElementById('dayTabs');
@@ -2015,10 +2081,19 @@
             <h4 class="stop-name">${escapeHtml(s.name)}</h4>
             ${s.note ? `<div class="stop-note">${escapeHtml(s.note)}</div>` : ''}
             <div class="stop-footer">
-              <span class="transport-tag transport-${escapeHtml(s.transportType)}">
-                ${getTransportIcon(s.transportType)}
-                <span>${escapeHtml(s.transportLabel || '步行')}</span>
-              </span>
+              <div class="stop-meta-tags">
+                <span class="transport-tag transport-${escapeHtml(s.transportType)}">
+                  ${getTransportIcon(s.transportType)}
+                  <span>${escapeHtml(s.transportLabel || '步行')}</span>
+                </span>
+                <a class="map-btn" href="${getGoogleMapsUrl(s.name)}" target="_blank" rel="noopener noreferrer" aria-label="在 Google 地圖開啟 ${escapeHtml(s.name)}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 3C8.1 3 5 6.1 5 10C5 14.8 12 21 12 21C12 21 19 14.8 19 10C19 6.1 15.9 3 12 3Z" fill="#F2A497" stroke="#3E3A39" stroke-width="2.2" stroke-linejoin="round"/>
+                    <circle cx="12" cy="10" r="2.6" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2"/>
+                  </svg>
+                  <span>Google Map</span>
+                </a>
+              </div>
               <div class="stop-actions">
                 <button type="button" class="icon-btn" data-action="up" data-idx="${idx}" title="上移" aria-label="上移此行程" ${idx === 0 ? 'disabled' : ''}>↑</button>
                 <button type="button" class="icon-btn" data-action="down" data-idx="${idx}" title="下移" aria-label="下移此行程" ${idx === dayData.stops.length - 1 ? 'disabled' : ''}>↓</button>
