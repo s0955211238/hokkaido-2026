@@ -879,6 +879,71 @@
       transform: translateY(1px);
     }
 
+    .tips-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--ink);
+      background-color: var(--yellow);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-pill);
+      padding: 2px 10px;
+      font-size: 0.8rem;
+      box-shadow: 0 2px 0 var(--ink);
+      transition: transform 0.12s ease, background-color 0.12s ease;
+    }
+
+    .tips-btn:hover,
+    .tips-btn:focus-visible {
+      background-color: var(--coral);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .tips-btn:active {
+      transform: translateY(1px);
+    }
+
+    .tips-section {
+      background-color: var(--paper);
+      border: 2.5px solid var(--ink);
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .tips-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .tips-section-badge {
+      display: inline-block;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-pill);
+      padding: 1px 10px;
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+    }
+
+    .tips-badge-see { background-color: var(--sky); }
+    .tips-badge-eat { background-color: var(--coral); }
+    .tips-badge-buy { background-color: var(--yellow); }
+    .tips-badge-note { background-color: var(--bamboo); }
+
+    .tips-ul {
+      padding-left: 18px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .tips-ul li {
+      margin-bottom: 4px;
+    }
+
+    .tips-ul li:last-child {
+      margin-bottom: 0;
+    }
+
     /* ===== Transport Tags ===== */
     .transport-tag {
       display: inline-flex;
@@ -2095,6 +2160,20 @@
     </div>
   </div>
 
+  <!-- Modal for Stop TIPS! -->
+  <div class="modal-backdrop" id="tipsModal" role="dialog" aria-modal="true" aria-labelledby="tipsModalTitle">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="tipsModalTitle">景點攻略 TIPS!</h3>
+        <button type="button" class="icon-btn" id="closeTipsModal" aria-label="關閉視窗">X</button>
+      </div>
+      <div id="tipsModalBody"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-primary" id="okTipsModal">知道了</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     /* ===== Storage Keys ===== */
     const STORAGE_KEYS = {
@@ -2451,6 +2530,380 @@
       return icons[type] || icons.walk;
     }
 
+    /* ===== Stop TIPS! Knowledge Base (Excludes Stations, Airports, Hotels) ===== */
+    const STOP_TIPS = {
+      '迴轉壽司 根室花丸 Kiralis 函館店': {
+        eat: [
+          '二階建干貝（兩層厚切干貝，招牌必點）',
+          '花咲蟹鐵砲汁（湯頭鮮甜、冬日暖胃）',
+          '炙燒比目魚鰭邊、紅鮭筋子、當季真鱈白子軍艦'
+        ],
+        note: [
+          '位在函館站前 Kiralis 地下 1 樓，建議抵達後先抽號碼牌再逛樓上。',
+          '熱門品項若轉盤沒看到，可直接畫單向師傅現點。'
+        ]
+      },
+      '金森紅磚倉庫—Bay 函館': {
+        see: [
+          '12 月限定「函館聖誕夢幻節」20 公尺海上巨型聖誕樹，傍晚 18:00 點燈與煙火最受歡迎',
+          '運河水面倒映紅磚倉庫與雪景的經典畫面'
+        ],
+        eat: [
+          '函館必吃 SNAFFLE\'S 輕乳酪起司歐姆雷特蛋糕（可內用配咖啡）',
+          'Petite Merveille 南瓜布丁與起司蛋糕'
+        ],
+        buy: [
+          'SNAFFLE\'S 起司蛋糕禮盒（函館人氣首選）',
+          '北海道特色玻璃雜貨、音樂盒與海鮮乾貨'
+        ]
+      },
+      'Angelique Voyage': {
+        eat: [
+          '賞味期限只有 30 分鐘的「手工現做千層可麗餅」（草莓、巧克力卡士達最熱門）',
+          '生巧克力鬆露（Chocolat Voyage）口感濃郁滑順'
+        ],
+        buy: [
+          '招牌生巧克力球禮盒（需冷藏，適合當晚在飯店享用或回程前購買）'
+        ],
+        note: [
+          '熱門甜點常在下午提前售罄，建議提早前往確認當日供應品項。'
+        ]
+      },
+      '幸運小丑漢堡 碼頭末廣店': {
+        eat: [
+          'No.1 招牌「中華雞腿堡（チャイニーズチキンバーガー）」酸甜酥脆必點',
+          '幸運起司肉醬薯條（用馬克杯盛裝的熱起司肉醬薯條）',
+          '烏龍茶或招牌絲滑奶昔解膩'
+        ],
+        buy: [
+          '店內販售幸運小丑限定咖哩調理包、拉麵、馬克杯與周邊小物'
+        ],
+        note: [
+          '碼頭末廣店空間寬敞且緊鄰金森紅磚倉庫，尖峰時段點餐需稍候。'
+        ]
+      },
+      '函館山展望台': {
+        see: [
+          '世界三大夜景之一，左右兩側津輕海峽與函館灣夾出的雙弧線地形夜景',
+          '冬季白雪覆蓋屋頂時，城市燈火反光更顯立體'
+        ],
+        buy: [
+          '山頂紀念品店販售函館夜景限定明信片與北海道雪精靈周邊'
+        ],
+        note: [
+          '山頂風勢極強且體感溫度遠低於市區，務必戴毛帽、圍巾與防風手套。',
+          '下山纜車常需排隊 20 至 30 分鐘，請預留時間。'
+        ]
+      },
+      '津津軒拉麵': {
+        eat: [
+          '招牌函館鹽味拉麵（清澈琥珀湯頭配直細麵，清爽不死鹹）',
+          '人氣炒飯與煎餃（適合搭配拉麵作為宵夜）'
+        ],
+        note: [
+          '就在函館車站附近大門橫丁一帶，冬天看完函館山夜景吃一碗最暖胃。'
+        ]
+      },
+      '五稜郭公園': {
+        see: [
+          '登「五稜郭塔」展望台俯瞰完整星形護城河雪景（冬季「五稜星之夢」夜間點燈也很美）',
+          '公園內的「箱館奉行所」復原木造建築'
+        ],
+        buy: [
+          '五稜郭塔 1 樓商店有土方歲三與新選組限定周邊、北海道限定伴手禮'
+        ],
+        note: [
+          '星形全貌必須登上五稜郭塔才能看清楚，地面散步僅能看到護城河與城牆。'
+        ]
+      },
+      '六花亭 五稜郭店': {
+        see: [
+          '落地窗面向五稜郭公園林木與雪景，是北海道氣氛極佳的門市之一'
+        ],
+        eat: [
+          '門市喫茶室限定甜點：現烤草莓鬆餅、雪こんチーズ（可可餅乾夾起司蛋糕）'
+        ],
+        buy: [
+          '蘭姆葡萄奶油夾心餅乾（マルセイバターサンド）',
+          '草莓白巧克力球、霜だたみ酥派、酒糖（六花のつゆ）'
+        ]
+      },
+      'Sports Depo 函館梁川店': {
+        buy: [
+          '大型運動戶外用品賣場，適合補齊冬季雪靴、防滑冰爪、發熱排汗層、雪地手套與毛帽',
+          '常見品牌（The North Face、Columbia、Mizuno、ASICS）尺寸齊全'
+        ],
+        note: [
+          '滿額可確認店內是否提供免稅（Tax-Free）服務，記得攜帶護照。'
+        ]
+      },
+      'Soup Curry Begirama': {
+        eat: [
+          '招牌燉雞腿蔬菜湯咖哩（雞腿軟嫩脫骨，搭配北海道甜根菜與馬鈴薯）',
+          '可自由選擇辣度與飯量，建議加點起司覆蓋在白飯上更濃郁'
+        ],
+        note: [
+          '湯咖哩吃法是用湯匙舀飯後再沾取熱湯，冬季喝熱湯非常驅寒。'
+        ]
+      },
+      '八幡坂': {
+        see: [
+          '筆直延伸至函館港灣與摩周丸號船影的經典坡道，冬季兩旁行道樹有燈飾點綴',
+          '順道可步行至鄰近的元町教會群與舊函館區公會堂'
+        ],
+        note: [
+          '冬季坡道積雪結冰極滑，請走兩側人行道並留意來車，拍照勿停留馬路中央。'
+        ]
+      },
+      '金森紅磚倉庫': {
+        see: [
+          '明治時期留存的紅磚倉庫群（金森洋物館、函館歷史廣場），室內暖氣充足好逛'
+        ],
+        eat: [
+          '函館牛奶霜淇淋、現烤起司塔與倉庫內咖啡館'
+        ],
+        buy: [
+          '北海道哈密瓜果凍、昆布湯包、小樽玻璃小物、函館限定啤酒與零食禮盒'
+        ]
+      },
+      '成吉思汗 羊羊亭': {
+        eat: [
+          '招牌生羊肉成吉思汗烤肉（無羊騷味，搭洋蔥與豆芽吸滿肉汁）',
+          '厚切羊肩排與札幌經典生啤酒（Sapporo Classic）絕配'
+        ],
+        note: [
+          '已預約 18:30 座位，烤肉油煙較重，大衣外套建議善用店內置物袋或寄放。'
+        ]
+      },
+      '仙堂庵': {
+        eat: [
+          '洞爺湖溫泉街知名釜飯與扇貝料理（帆立貝釜飯、干貝味噌湯）',
+          '現烤帆立貝與北海道在地海鮮定食'
+        ],
+        note: [
+          '鄰近洞爺湖汽船碼頭，用完午餐剛好步行搭船遊湖。'
+        ]
+      },
+      '洞爺湖汽船': {
+        see: [
+          '搭乘城堡造型遊覽船「Espoir」巡航不凍湖洞爺湖，冬季雪山（羊蹄山、昭和新山）倒映湖面視野極佳'
+        ],
+        note: [
+          '冬季受風雪影響部分航班可能停駛或改為不登中島的繞湖航程，建議先至碼頭確認船班。',
+          '甲板風大寒冷，拍照後可回室內暖氣船艙賞景。'
+        ]
+      },
+      'Lake Toya Onsen Illumination Tunnel': {
+        see: [
+          '冬季限定 70 公尺長的夢幻彩燈隧道，由數十萬顆 LED 燈泡交織而成，夜間雪地散步必拍'
+        ],
+        note: [
+          '免費入場，距離洞爺乃之風飯店步行可達，適合泡完溫泉或晚餐前後散步拍照。'
+        ]
+      },
+      '炸豬排 檍 札幌薄野店': {
+        eat: [
+          '使用林 SPF 豬肉的招牌厚切里肌（ロースかつ）或特選里肌，外酥內嫩帶肉汁',
+          '桌上附多款岩鹽（推薦喜馬拉雅岩鹽與海鹽），比豬排醬更能凸顯豬肉甜味'
+        ],
+        note: [
+          '人氣名店用餐尖峰常排隊，建議避開正中午或提早抵達。'
+        ]
+      },
+      '北海道神宮': {
+        see: [
+          '雪白參道與莊嚴木造正殿，運氣好可在圓山公園林間遇見野生蝦夷松鼠'
+        ],
+        eat: [
+          '境內「六花亭 神宮茶屋店」限定現烤「判官さま（判官餅）」，熱呼呼紅豆麻糬必吃'
+        ],
+        buy: [
+          '北海道神宮限定御守（拉拉熊繪馬與限定開運御守）'
+        ]
+      },
+      'UNIQLO 札幌三越店': {
+        buy: [
+          '補貨超極暖（Ultra Warm）發熱衣、輕羽絨中層背心、防風刷毛褲與發熱襪',
+          '北海道限定聯名 T 恤（UTme!）與冬季特價保暖單品'
+        ],
+        note: [
+          '結帳滿 5,500 日圓可辦理免稅，請隨身攜帶護照正本。'
+        ]
+      },
+      '大通公園': {
+        see: [
+          '12 月限定「札幌白色燈樹節」大型光雕與雪樹點燈',
+          '「札幌慕尼黑聖誕市集」木屋攤位，以及東側的札幌電視塔夜景'
+        ],
+        eat: [
+          '聖誕市集熱紅酒（Glühwein）、德式香腸、烤杏仁與焦糖堅果'
+        ],
+        buy: [
+          '聖誕市集限定年度紀念馬克杯、木製聖誕吊飾與俄羅斯娃娃'
+        ]
+      },
+      '蟹座': {
+        eat: [
+          '三大蟹吃到飽（帝王蟹、松葉蟹、毛蟹）搭配和牛涮涮鍋與海鮮壽司',
+          '建議先攻蟹腳與和牛，再搭配熱茶與甜點'
+        ],
+        note: [
+          '已預約 20:15（13,000 日幣/人），用餐有時間限制，建議準時報到。'
+        ]
+      },
+      'MEGA 唐吉訶德 札幌狸小路本店': {
+        buy: [
+          '日本藥妝、蒸氣眼罩、足貼、暖暖包補充與各式零食泡麵一次購齊',
+          '北海道限定口味餅乾、雷神巧克力白巧克力版、札幌拉麵調理包'
+        ],
+        note: [
+          '24 小時營業，結帳免稅櫃台晚間常排隊，建議先領取免稅優惠券並預留退稅時間。'
+        ]
+      },
+      '札幌諏訪神社': {
+        see: [
+          '精緻花手水（冬季有時呈現結冰花手水）與可愛雪精靈（銀喉長尾山雀）裝飾'
+        ],
+        buy: [
+          '超人氣「銀喉長尾山雀（シマエナガ）」御守、蕾絲御守與季節限定剪紙御朱印'
+        ],
+        note: [
+          '距離北 13 條東站步行可達，上午參拜人潮較少，剛好銜接 10:20 一日團集合。'
+        ]
+      },
+      'Christmas tree（美瑛聖誕樹）': {
+        see: [
+          '純白雪原丘陵中孤立矗立的歐洲雲杉，形狀酷似聖誕樹，是美瑛冬季最具代表性的極簡雪景'
+        ],
+        note: [
+          '周圍農田為私有地，嚴禁跨越封鎖線踏入雪田，請在馬路邊指定位置遠拍。'
+        ]
+      },
+      '四季彩之丘': {
+        see: [
+          '冬季化身大片雪白丘陵，可體驗雪上摩托車、雪上香蕉船（自費）與室內羊駝牧場'
+        ],
+        eat: [
+          '北海道奶油馬鈴薯可樂餅、熱玉米濃湯與牧場霜淇淋'
+        ],
+        buy: [
+          '美瑛產馬鈴薯零食、薰衣草香氛小物與羊駝周邊'
+        ]
+      },
+      '白金青池': {
+        see: [
+          '冬季池面結冰覆雪，枯木群在白雪映襯下呈現夢幻銀白世界；若遇傍晚點燈，藍白燈光打在冰面極為夢幻'
+        ],
+        note: [
+          '池畔步道積雪易滑，建議穿著防滑雪靴並放慢腳步。'
+        ]
+      },
+      '森林精靈露台': {
+        see: [
+          '隱身富良野森林中的 15 棟童話尖頂木屋，傍晚點燈後搭配白雪宛如精靈村落'
+        ],
+        eat: [
+          '鄰近的「森之時計」咖啡館（需看一日團停留時間）或木屋熱飲'
+        ],
+        buy: [
+          '手作木雕貓頭鷹、雪結晶銀飾、香氛蠟燭與皮件工藝品（多數工坊內禁止攝影）'
+        ]
+      },
+      '弟子屈拉麵 札幌拉麵橫丁店': {
+        eat: [
+          '招牌「魚介絞り醬油拉麵」與「燒豚味噌拉麵」（北海道味噌香濃帶微辣）',
+          '山わさび（山葵）鮭魚卵飯搭配拉麵非常受歡迎'
+        ],
+        note: [
+          '位於元祖札幌拉麵橫丁內，座位數不多，適合一日團結束後迅速暖胃。'
+        ]
+      },
+      '小樽水族館': {
+        see: [
+          '冬季限定必看「企鵝雪地散步」（巴布亞企鵝在雪道搖晃行走，近距離超療癒）',
+          '海豚、海獅室內表演與面海的野生海豹池'
+        ],
+        buy: [
+          '館內限定企鵝與海豹絨毛玩偶、小樽海洋主題文具'
+        ],
+        note: [
+          '企鵝散步通常每日有固定場次（約 11:00 左右），入館後請先確認當日表演時刻表。'
+        ]
+      },
+      '小樽蕎麥屋 籔半': {
+        eat: [
+          '使用北海道產蕎麥粉手打的「地物粉」蕎麥麵（推薦鴨南蠻溫蕎麥麵或天婦羅蕎麥麵）',
+          '冬季可點熱騰騰的鯡魚蕎麥麵（にしんそば），小樽港都經典味'
+        ],
+        note: [
+          '歷史老宅改建，店內氣氛古樸，用餐尖峰可能需候位。'
+        ]
+      },
+      '小樽堺町通商店街': {
+        see: [
+          '小樽音樂盒堂本館（門口每 15 分鐘鳴笛的蒸氣鐘必看）',
+          '北一硝子三號館「北一廳」167 盞煤油燈大廳'
+        ],
+        eat: [
+          'LeTAO 雙層起司蛋糕與現擠牛奶霜淇淋',
+          '北菓樓「夢不思議大泡芙」與試吃妖精之森年輪蛋糕',
+          '六花亭小樽運河店現做甜點'
+        ],
+        buy: [
+          'LeTAO 紅茶巧克力、起司餅乾',
+          '北菓樓「北海道開拓米菓」（帆立貝、甜蝦、昆布口味最搶手）',
+          '大正硝子館與北一硝子手工玻璃杯、小樽音樂盒'
+        ]
+      },
+      '小樽運河': {
+        see: [
+          '站在「淺草橋」或「中央橋」拍攝運河石造倉庫群與瓦斯燈倒影',
+          '12 月「小樽雪物語」期間運河點起藍色燈海，黃昏魔幻時刻（約 16:00 前後）最美'
+        ],
+        note: [
+          '傍晚氣溫驟降且河畔風大，拍照時注意手機低溫掉電，建議隨身備妥行動電源。'
+        ]
+      },
+      '仙台利久牛舌 - 札幌 Stellar Place 店': {
+        eat: [
+          '招牌炭烤厚切牛舌定食（附麥飯、清甜牛尾湯與醃漬南蠻味噌）',
+          '想吃更軟嫩口感可升級「極（きわみ）」特厚切牛舌定食'
+        ],
+        note: [
+          '位於札幌車站共構商場 6 樓，小樽搭 JR 回到札幌站直接上樓用餐非常順路。'
+        ]
+      },
+      '狸小路商店街': {
+        see: [
+          '全程設有遮雨棚，下雪也能輕鬆逛街（1 丁目至 7 丁目各有特色）'
+        ],
+        buy: [
+          '狸小路 6 丁目的「土產店 たぬきや / しらかば」常有 9 折免稅北海道伴手禮（白色戀人、薯條三兄弟、ROYCE\'）',
+          '藥妝店（札幌藥妝、松本清、大國藥妝）集中於 3 至 5 丁目，方便最後比價補貨'
+        ]
+      },
+      '串鳥 中央本店': {
+        eat: [
+          '北海道必吃平價炭火燒鳥：豬五花串（豚精肉，搭配洋蔥而非大蔥是北海道特色）、雞肉蔥串、青椒起司肉捲',
+          '入座附贈免費熱雞湯與蘿蔔泥（可續加，冬天喝超舒服）',
+          '釜飯（雞肉或鮭魚釜飯，現煮約需 25 分鐘建議一入座就點）'
+        ],
+        note: [
+          '宵夜時段人氣極旺，適合點杯北海道生啤或沙瓦為最後一晚慶祝。'
+        ]
+      }
+    };
+
+    function isExcludedFromTips(name) {
+      return /機場|車站|火車站|小樽站|飯店|巴士停車場|乘降場所/.test(String(name || ''));
+    }
+
+    function getStopTips(name) {
+      const clean = String(name || '').trim();
+      if (isExcludedFromTips(clean)) return null;
+      return STOP_TIPS[clean] || null;
+    }
+
     /* ===== Google Maps URL Builder ===== */
     const MAP_QUERY_OVERRIDES = {
       'Angelique Voyage': 'Angelique Voyage 函館',
@@ -2537,7 +2990,9 @@
         return;
       }
 
-      list.innerHTML = dayData.stops.map((s, idx) => `
+      list.innerHTML = dayData.stops.map((s, idx) => {
+        const hasTips = Boolean(getStopTips(s.name));
+        return `
         <div class="timeline-item ${s.must ? 'must-go' : ''}">
           <span class="timeline-dot" aria-hidden="true"></span>
           <article class="stop-card ${s.must ? 'must-go' : ''}">
@@ -2570,6 +3025,14 @@
                   </svg>
                   <span>Google Map</span>
                 </a>
+                ${hasTips ? `
+                  <button type="button" class="tips-btn" data-open-tips="${idx}" aria-label="查看 ${escapeHtml(s.name)} 攻略 TIPS!">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M9 18H15M10 21H14M12 3C8.7 3 6 5.7 6 9C6 11.2 7.2 13.1 9 14.2V15.5C9 16.1 9.4 16.5 10 16.5H14C14.6 16.5 15 16.1 15 15.5V14.2C16.8 13.1 18 11.2 18 9C18 5.7 15.3 3 12 3Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>TIPS!</span>
+                  </button>
+                ` : ''}
               </div>
               <div class="stop-actions">
                 <button type="button" class="icon-btn" data-action="up" data-idx="${idx}" title="上移" aria-label="上移此行程" ${idx === 0 ? 'disabled' : ''}>↑</button>
@@ -2580,7 +3043,16 @@
             </div>
           </article>
         </div>
-      `).join('');
+      `;
+      }).join('');
+
+      list.querySelectorAll('[data-open-tips]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const idx = Number(btn.dataset.openTips);
+          const stop = itinerary[currentDayIndex].stops[idx];
+          if (stop) openTipsModal(stop.name);
+        });
+      });
 
       list.querySelectorAll('[data-action]').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -2608,6 +3080,64 @@
         });
       });
     }
+
+    /* ===== Stop TIPS! Modal ===== */
+    const tipsModal = document.getElementById('tipsModal');
+
+    function openTipsModal(stopName) {
+      const tips = getStopTips(stopName);
+      if (!tips) return;
+
+      document.getElementById('tipsModalTitle').textContent = `${stopName}・TIPS!`;
+      const blocks = [];
+
+      if (tips.see && tips.see.length) {
+        blocks.push(`
+          <div class="tips-section">
+            <span class="tips-section-badge tips-badge-see">必看亮點</span>
+            <ul class="tips-ul">${tips.see.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+          </div>
+        `);
+      }
+      if (tips.eat && tips.eat.length) {
+        blocks.push(`
+          <div class="tips-section">
+            <span class="tips-section-badge tips-badge-eat">必吃推薦</span>
+            <ul class="tips-ul">${tips.eat.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+          </div>
+        `);
+      }
+      if (tips.buy && tips.buy.length) {
+        blocks.push(`
+          <div class="tips-section">
+            <span class="tips-section-badge tips-badge-buy">伴手禮推薦</span>
+            <ul class="tips-ul">${tips.buy.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+          </div>
+        `);
+      }
+      if (tips.note && tips.note.length) {
+        blocks.push(`
+          <div class="tips-section">
+            <span class="tips-section-badge tips-badge-note">旅遊小提醒</span>
+            <ul class="tips-ul">${tips.note.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+          </div>
+        `);
+      }
+
+      document.getElementById('tipsModalBody').innerHTML = blocks.join('');
+      tipsModal.classList.add('open');
+    }
+
+    function closeTipsModal() {
+      tipsModal.classList.remove('open');
+    }
+
+    document.getElementById('closeTipsModal').addEventListener('click', closeTipsModal);
+    document.getElementById('okTipsModal').addEventListener('click', closeTipsModal);
+    tipsModal.addEventListener('click', (e) => { if (e.target === tipsModal) closeTipsModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && tipsModal.classList.contains('open')) closeTipsModal();
+    });
 
     /* ===== Stop Add / Edit Modal ===== */
     const stopModal = document.getElementById('stopModal');
