@@ -1515,6 +1515,14 @@
       word-break: break-word;
     }
 
+    .expense-item-note {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      margin-top: 2px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
     .expense-item-right {
       display: flex;
       align-items: center;
@@ -2075,6 +2083,7 @@
               <option value="Day 7（12/19）">Day 7（12/19）</option>
               <option value="出發前">出發前預付</option>
             </select>
+            <input type="text" id="expNote" class="input-field full" placeholder="備註（選填，例：刷卡、代墊、退稅）" />
           </div>
           <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -3343,6 +3352,7 @@
       const currency = document.getElementById('expCurrency').value;
       const category = document.getElementById('expCategory').value;
       const day = document.getElementById('expDay').value;
+      const note = document.getElementById('expNote').value.trim();
 
       if (!name || isNaN(amount) || amount <= 0) return;
 
@@ -3352,11 +3362,13 @@
         amount,
         currency,
         category,
-        day
+        day,
+        note
       });
       saveData(STORAGE_KEYS.expenses, expenses);
       document.getElementById('expName').value = '';
       document.getElementById('expAmount').value = '';
+      document.getElementById('expNote').value = '';
       renderExpenses();
     });
 
@@ -3482,7 +3494,7 @@
       let totalJpy = 0;
       let totalTwd = 0;
       const rows = [
-        ['日期', '分類', '消費項目', '幣別', '原幣金額', '匯率(JPY→TWD)', '折合台幣(TWD)']
+        ['日期', '分類', '消費項目', '幣別', '原幣金額', '匯率(JPY→TWD)', '折合台幣(TWD)', '備註']
       ];
 
       expenses.slice().reverse().forEach((item) => {
@@ -3498,13 +3510,14 @@
           item.currency || 'JPY',
           Number(item.amount),
           isJpy ? Number(fxRate) : 1,
-          Number(twd)
+          Number(twd),
+          item.note || ''
         ]);
       });
 
       rows.push([]);
-      rows.push(['', '', '日幣花費總計（JPY）', 'JPY', Math.round(totalJpy), '', '']);
-      rows.push(['', '', '折合台幣總計（TWD）', 'TWD', '', '', Math.round(totalTwd)]);
+      rows.push(['', '', '日幣花費總計（JPY）', 'JPY', Math.round(totalJpy), '', '', '']);
+      rows.push(['', '', '折合台幣總計（TWD）', 'TWD', '', '', Math.round(totalTwd), '']);
 
       const sheetRowsXml = rows.map((row, rIdx) => {
         const cellsXml = row.map((val, cIdx) => {
@@ -3528,6 +3541,7 @@
     <col min="5" max="5" width="14" customWidth="1"/>
     <col min="6" max="6" width="16" customWidth="1"/>
     <col min="7" max="7" width="16" customWidth="1"/>
+    <col min="8" max="8" width="26" customWidth="1"/>
   </cols>
   <sheetData>${sheetRowsXml}</sheetData>
 </worksheet>`;
@@ -3642,6 +3656,7 @@
                 <span class="exp-day-tag">${escapeHtml(item.day)}</span>
               </div>
               <div class="expense-item-name">${escapeHtml(item.name)}</div>
+              ${item.note ? `<div class="expense-item-note">備註：${escapeHtml(item.note)}</div>` : ''}
             </div>
             <div class="expense-item-right">
               <div class="expense-amount-col">
