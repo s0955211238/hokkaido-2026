@@ -1940,7 +1940,12 @@
           </div>
           <h2 class="section-title">每日行程</h2>
         </div>
-        <button type="button" class="btn-mini" id="resetItineraryBtn">還原預設行程</button>
+        <button type="button" class="btn-mini" id="exportItineraryExcelBtn" style="background-color: var(--bamboo); display:inline-flex; align-items:center; gap:4px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 4V15M12 15L7 10M12 15L17 10M5 19H19" stroke="#3E3A39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>匯出行程 Excel</span>
+        </button>
       </div>
 
       <!-- Day Switcher -->
@@ -2519,51 +2524,11 @@
             <div class="flight-divider"></div>
             <div class="flight-meta">
               <span class="flight-note-text">${escapeHtml(f.note)}</span>
-              <button type="button" class="btn-mini" data-edit-flight="${f.id}">編輯航班</button>
             </div>
           </div>
         </article>
       `).join('');
-
-      grid.querySelectorAll('[data-edit-flight]').forEach((btn) => {
-        btn.addEventListener('click', () => openFlightModal(btn.dataset.editFlight));
-      });
     }
-
-    const flightModal = document.getElementById('flightModal');
-    function openFlightModal(id) {
-      const f = flights.find((item) => item.id === id);
-      if (!f) return;
-      document.getElementById('flightId').value = f.id;
-      document.getElementById('flightModalTitle').textContent = `編輯${f.direction}`;
-      document.getElementById('flightCode').value = f.code;
-      document.getElementById('flightDepTime').value = f.depTime;
-      document.getElementById('flightArrTime').value = f.arrTime;
-      document.getElementById('flightNote').value = f.note;
-      flightModal.classList.add('open');
-    }
-
-    function closeFlightModal() {
-      flightModal.classList.remove('open');
-    }
-
-    document.getElementById('closeFlightModal').addEventListener('click', closeFlightModal);
-    document.getElementById('cancelFlightModal').addEventListener('click', closeFlightModal);
-    flightModal.addEventListener('click', (e) => { if (e.target === flightModal) closeFlightModal(); });
-
-    document.getElementById('flightForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const id = document.getElementById('flightId').value;
-      const f = flights.find((item) => item.id === id);
-      if (!f) return;
-      f.code = document.getElementById('flightCode').value.trim() || '航班編號待補';
-      f.depTime = document.getElementById('flightDepTime').value.trim();
-      f.arrTime = document.getElementById('flightArrTime').value.trim();
-      f.note = document.getElementById('flightNote').value.trim();
-      saveData(STORAGE_KEYS.flights, flights);
-      renderFlights();
-      closeFlightModal();
-    });
 
     /* ===== Transport SVG Icons ===== */
     function getTransportIcon(type) {
@@ -3236,14 +3201,104 @@
       closeStopModal();
     });
 
-    document.getElementById('resetItineraryBtn').addEventListener('click', () => {
-      if (confirm('確定要還原全部 7 天的預設行程資料嗎？自行新增或修改的內容將會重置。')) {
-        itinerary = JSON.parse(JSON.stringify(DEFAULT_ITINERARY));
-        saveData(STORAGE_KEYS.itinerary, itinerary);
-        renderDayTabs(true);
-        renderTimeline(true);
-      }
-    });
+    function exportItineraryToExcel() {
+      const rows = [
+        ['天數', '日期', '當日主題', '時間', '停留時間', '景點 / 地點', '必去', '交通方式', '備註', 'Google Map']
+      ];
+
+      itinerary.forEach((d) => {
+        const dayLabel = `Day ${d.day}`;
+        const dateLabel = `${d.date}（${d.week}）`;
+        d.stops.forEach((s) => {
+          rows.push([
+            dayLabel,
+            dateLabel,
+            d.theme || '',
+            s.time || '',
+            s.stay || '',
+            s.name || '',
+            s.must ? '必去' : '',
+            s.transportLabel || '',
+            s.note || '',
+            getGoogleMapsUrl(s.name)
+          ]);
+        });
+      });
+
+      const sheetRowsXml = rows.map((row, rIdx) => {
+        const cellsXml = row.map((val, cIdx) => {
+          if (val === '' || val === null || val === undefined) return '';
+          const ref = `${colLetter(cIdx)}${rIdx + 1}`;
+          return `<c r="${ref}" t="inlineStr"><is><t>${xmlEscape(val)}</t></is></c>`;
+        }).join('');
+        return `<row r="${rIdx + 1}">${cellsXml}</row>`;
+      }).join('');
+
+      const sheetXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <cols>
+    <col min="1" max="1" width="8" customWidth="1"/>
+    <col min="2" max="2" width="14" customWidth="1"/>
+    <col min="3" max="3" width="26" customWidth="1"/>
+    <col min="4" max="4" width="10" customWidth="1"/>
+    <col min="5" max="5" width="14" customWidth="1"/>
+    <col min="6" max="6" width="28" customWidth="1"/>
+    <col min="7" max="7" width="8" customWidth="1"/>
+    <col min="8" max="8" width="18" customWidth="1"/>
+    <col min="9" max="9" width="36" customWidth="1"/>
+    <col min="10" max="10" width="44" customWidth="1"/>
+  </cols>
+  <sheetData>${sheetRowsXml}</sheetData>
+</worksheet>`;
+
+      const workbookXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>
+    <sheet name="北海道7日行程" sheetId="1" r:id="rId1"/>
+  </sheets>
+</workbook>`;
+
+      const workbookRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+</Relationships>`;
+
+      const rootRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`;
+
+      const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+</Types>`;
+
+      const blob = buildZip([
+        { name: '[Content_Types].xml', content: contentTypesXml },
+        { name: '_rels/.rels', content: rootRelsXml },
+        { name: 'xl/workbook.xml', content: workbookXml },
+        { name: 'xl/_rels/workbook.xml.rels', content: workbookRelsXml },
+        { name: 'xl/worksheets/sheet1.xml', content: sheetXml }
+      ]);
+
+      const now = new Date();
+      const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+      const filename = `2026冬季北海道行程_${stamp}.xlsx`;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    document.getElementById('exportItineraryExcelBtn').addEventListener('click', exportItineraryToExcel);
 
     /* ===== Checklists Rendering ===== */
     const LIST_META = {
