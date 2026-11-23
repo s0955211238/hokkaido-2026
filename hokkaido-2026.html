@@ -723,6 +723,27 @@
       font-size: 0.88rem;
     }
 
+    .day-outfit-note {
+      background-color: #EEF7FB;
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      padding: 9px 12px;
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    .day-outfit-head {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background-color: var(--sky);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-pill);
+      padding: 1px 10px;
+      font-size: 0.78rem;
+      margin-bottom: 5px;
+    }
+
     /* ===== Timeline ===== */
     .timeline-stage.bounce-in {
       animation: stageBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -2992,6 +3013,17 @@
       });
     }
 
+    /* ===== Daily Outfit Recommendations (By Schedule Order & Arrival Times) ===== */
+    const DAILY_OUTFIT_TIPS = {
+      1: '搭機穿好穿脫洋蔥式（薄發熱衣＋針織／大學 T＋好脫羽絨外套）；15:28 金森海邊聖誕樹與 20:18 函館山展望台海風強、山頂體感常達零下，隨身備妥毛帽、圍巾、防風手套與貼式暖暖包，進室內吃壽司與拉麵時方便穿脫。',
+      2: '09:06 五稜郭公園與 15:32 八幡坂結冰坡道步行時間長，務必穿防滑深紋雪靴（或備簡易冰爪）與防風保暖長褲；18:25 成吉思汗羊羊亭烤肉油煙較重，建議穿易清洗或可收進置物袋的外套。',
+      3: '08:30 搭 JR 近 2 小時車廂暖氣強，內層穿透氣不悶熱的發熱衣；14:47 洞爺湖汽船甲板湖風刺骨、17:52 夜間彩燈隧道氣溫驟降，需配齊連帽防風羽絨衣、毛帽與手套；回飯店泡湯可穿易穿脫鞋襪。',
+      4: '若 08:00 環湖散步氣溫最低先穿完整保暖層；10:00 搭 2.5 小時接駁巴士與逛三越、唐吉訶德室內偏熱，洋蔥式穿法最關鍵；15:10 北海道神宮與 17:37 大通公園點燈在戶外約 2 小時，建議穿厚毛襪＋鞋底暖暖包，19:51 蟹座穿好捲袖深色上衣。',
+      5: '全行程最冷日！美瑛富良野內陸氣溫常比札幌低 5°C 以上，15:36 白金青池與 17:23 森林精靈露台入夜極寒。請採最強配置：超極暖發熱衣＋刷毛中層＋防風防水長版羽絨衣、刷毛防風褲、防滑雪靴、毛帽圍巾觸控手套與充足暖暖包。',
+      6: '10:01 小樽水族館臨海看企鵝散步風大、15:31 小樽運河黃昏體感冷，務必加強防風外套與防滑鞋底；13:18 堺町通與 18:28 狸小路屬室內與遮棚商店街暖氣足，內層勿過厚避免流汗著涼，可帶輕便袋收納圍巾手套。',
+      7: '08:00 拖行李走雪地至車站仍需穿防滑鞋與保暖外套，但 09:31 進新千歲機場與 15:35 返抵台灣溫差大；建議穿「薄長袖／薄發熱衣＋好收納壓縮羽絨衣」，抵台脫掉外層即可舒適返家。'
+    };
+
     function renderTimeline(withBounce = false) {
       const stage = document.getElementById('timelineStage');
       const dayData = itinerary[currentDayIndex];
@@ -3004,12 +3036,24 @@
         stage.classList.add('bounce-in');
       }
 
+      const outfitTip = DAILY_OUTFIT_TIPS[dayData.day] || '';
       banner.innerHTML = `
         <div class="day-banner-top">
           <h3 class="day-banner-title">第 ${dayData.day} 天・${escapeHtml(dayData.date)}（${escapeHtml(dayData.week)}）${escapeHtml(dayData.theme)}</h3>
           <span class="day-banner-count">共 ${dayData.stops.length} 個行程</span>
         </div>
         ${dayData.dayNote ? `<div class="day-banner-note">${escapeHtml(dayData.dayNote)}</div>` : ''}
+        ${outfitTip ? `
+          <div class="day-outfit-note">
+            <span class="day-outfit-head">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M8 4L12 7L16 4L20 7L18 12L16 11V20H8V11L6 12L4 7L8 4Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.1" stroke-linejoin="round"/>
+              </svg>
+              <span>當日著裝建議</span>
+            </span>
+            <div>${escapeHtml(outfitTip)}</div>
+          </div>
+        ` : ''}
       `;
 
       if (dayData.stops.length === 0) {
