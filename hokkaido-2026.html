@@ -2048,15 +2048,6 @@
           </div>
         </div>
 
-        <div class="fx-bar">
-          <span>日幣匯率換算設定</span>
-          <label class="fx-input-group" for="fxRateInput">
-            <span>1 JPY =</span>
-            <input type="number" id="fxRateInput" class="fx-input" step="0.001" min="0.01" value="0.215" />
-            <span>TWD</span>
-          </label>
-        </div>
-
         <form id="expenseForm">
           <div class="expense-form-grid">
             <input type="text" id="expName" class="input-field full" placeholder="消費項目（例：根室花丸壽司、蟹座）" required />
@@ -3330,20 +3321,8 @@
     };
 
     let expenses = loadData(STORAGE_KEYS.expenses, []);
-    let fxRate = Number(localStorage.getItem(STORAGE_KEYS.fxRate)) || 0.215;
+    const fxRate = 0.21;
     let currentExpenseFilter = 'all';
-
-    const fxRateInput = document.getElementById('fxRateInput');
-    fxRateInput.value = fxRate;
-
-    fxRateInput.addEventListener('input', () => {
-      const val = parseFloat(fxRateInput.value);
-      if (!isNaN(val) && val > 0) {
-        fxRate = val;
-        try { localStorage.setItem(STORAGE_KEYS.fxRate, String(fxRate)); } catch (e) {}
-        renderExpenses();
-      }
-    });
 
     document.getElementById('expenseForm').addEventListener('submit', (e) => {
       e.preventDefault();
