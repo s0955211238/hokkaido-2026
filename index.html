@@ -2230,9 +2230,9 @@
   <script>
     /* ===== Storage Keys ===== */
     const STORAGE_KEYS = {
-      itinerary: 'hokkaido2026_itinerary_v1',
+      itinerary: 'hokkaido2026_itinerary_v2',
       flights: 'hokkaido2026_flights_v3',
-      checklists: 'hokkaido2026_checklists_v1',
+      checklists: 'hokkaido2026_checklists_v2',
       expenses: 'hokkaido2026_expenses_v1',
       fxRate: 'hokkaido2026_fx_v1'
     };
@@ -2274,36 +2274,35 @@
         day: 1,
         date: '12/13',
         week: '週日',
-        theme: '抵達函館・紅磚倉庫與百萬夜景',
-        dayNote: '04:40 抵達桃園機場第一航廈，10:10 降落函館機場展開冬季北海道之旅。',
+        theme: '抵達函館・湯咖哩・紅磚倉庫與百萬夜景',
+        dayNote: '04:40 抵達桃園機場第一航廈，函館進市區放行李後品嚐 Soup Curry Begirama、金森紅磚倉庫聖誕樹與函館山夜景。',
         stops: [
-          { time: '04:40', stay: '06:40 離開', name: '臺灣桃園國際機場第一航廈', transportType: 'flight', transportLabel: '飛機 3 時 30 分', note: '提前 2 小時辦理登機與行李託運。', must: false },
+          { time: '04:40', stay: '停留 2 時', name: '臺灣桃園國際機場第一航廈', transportType: 'flight', transportLabel: '飛機 3 時 25 分', note: '提前 2 小時辦理登機與行李託運（IT236 06:45 起飛）。', must: false },
           { time: '10:10', stay: '停留 1 時 30 分', name: '函館機場', transportType: 'bus', transportLabel: '接駁巴士 1 時', note: '入境通關、領取行李後搭車前往市區。', must: false },
           { time: '12:40', stay: '停留 10 分', name: '函館車站', transportType: 'walk', transportLabel: '步行前往飯店', note: '', must: false },
-          { time: '13:03', stay: '停留 30 分', name: 'APA 飯店函館站前', transportType: 'walk', transportLabel: '步行 5 分', note: '先寄放行李，輕裝開始函館行程。', must: false },
-          { time: '13:38', stay: '停留 1 時 30 分', name: '迴轉壽司 根室花丸 Kiralis 函館店', transportType: 'train', transportLabel: '市電 / 巴士 20 分', note: '北海道人氣必吃迴轉壽司。', must: true },
-          { time: '15:28', stay: '停留 2 時', name: '金森紅磚倉庫—Bay 函館', transportType: 'walk', transportLabel: '步行散步', note: '每年 12 月前方水域會設置由加拿大姊妹市 Halifax 贈送、高達 20 公尺的「海上巨型聖誕樹」。', must: true },
-          { time: '17:44', stay: '停留 1 時', name: 'Angelique Voyage', transportType: 'train', transportLabel: '大眾運輸 9 分', note: '木板裝潢，新穎小巧的甜點店，供應精緻可麗餅、巧克力與蛋糕。', must: false },
-          { time: '18:53', stay: '停留 1 時', name: '幸運小丑漢堡 碼頭末廣店', transportType: 'ropeway', transportLabel: '大眾運輸 / 纜車 25 分', note: '函館限定人氣漢堡店。', must: true },
-          { time: '20:18', stay: '停留 1 時', name: '函館山展望台', transportType: 'train', transportLabel: '纜車 / 大眾運輸', note: '搭乘纜車抵達山頂平台，遠眺城市、海灣與海峽夜景。', must: true },
-          { time: '21:48', stay: '停留 1 時', name: '津津軒拉麵', transportType: 'walk', transportLabel: '步行回飯店', note: '宵夜熱呼呼拉麵暖胃。', must: false }
+          { time: '13:03', stay: '停留 30 分', name: 'APA 飯店函館站前', transportType: 'walk', transportLabel: '步行 10 分', note: '先寄放行李，輕裝開始函館行程。', must: false },
+          { time: '13:43', stay: '停留 1 時 30 分', name: 'Soup Curry Begirama', transportType: 'train', transportLabel: '市電 / 巴士 24 分', note: '函館人氣北海道湯咖哩。', must: true },
+          { time: '15:37', stay: '停留 2 時', name: '金森紅磚倉庫—Bay 函館', transportType: 'walk', transportLabel: '步行 2 分', note: '每年 12 月前方水域設置由加拿大姊妹市 Halifax 贈送、高達 20 公尺的「海上巨型聖誕樹」。', must: true },
+          { time: '17:39', stay: '停留 1 時', name: '幸運小丑漢堡 碼頭末廣店', transportType: 'ropeway', transportLabel: '大眾運輸 / 纜車 25 分', note: '函館限定人氣漢堡店。', must: true },
+          { time: '19:04', stay: '停留 1 時', name: '函館山展望台', transportType: 'train', transportLabel: '纜車 / 大眾運輸 30 分', note: '搭乘纜車抵達山頂平台，遠眺城市、海灣與海峽夜景。', must: true },
+          { time: '20:34', stay: '停留 1 時', name: '津津軒拉麵', transportType: 'walk', transportLabel: '步行回飯店', note: '宵夜熱呼呼函館鹽味拉麵暖胃。', must: false }
         ]
       },
       {
         day: 2,
         date: '12/14',
         week: '週一',
-        theme: '五稜郭雪景・八幡坂・羊羊亭烤肉',
-        dayNote: '函館全日深度散策，晚間 18:30 已預約成吉思汗羊羊亭。',
+        theme: '八幡坂・根室花丸・五稜郭與大黑屋烤肉',
+        dayNote: '上午漫步元町八幡坂與人氣甜點、中午吃根室花丸迴轉壽司，下午前進五稜郭公園看冬季星形點燈並享用成吉思汗大黑屋。',
         stops: [
-          { time: '08:00', stay: '08:30 離開', name: 'APA 飯店函館站前', transportType: 'train', transportLabel: '市電 / 巴士 36 分', note: '飯店出發前往五稜郭地區。', must: false },
-          { time: '09:06', stay: '停留 2 時', name: '五稜郭公園', transportType: 'walk', transportLabel: '步行 6 分', note: '建有護城河的 19 世紀星形堡壘，冬季雪景星形輪廓非常壯觀。', must: true },
-          { time: '11:12', stay: '停留 1 時', name: '六花亭 五稜郭店', transportType: 'walk', transportLabel: '步行前往', note: '採買北海道經典伴手禮並歇腳品嚐甜點。', must: false },
-          { time: '12:12', stay: '停留 1 時', name: 'Sports Depo 函館梁川店', transportType: 'train', transportLabel: '大眾運輸 29 分', note: '運動與戶外保暖裝備採購。', must: false },
-          { time: '13:41', stay: '停留 1 時 30 分', name: 'Soup Curry Begirama', transportType: 'train', transportLabel: '大眾運輸 21 分', note: '北海道代表美食湯咖哩。', must: false },
-          { time: '15:32', stay: '停留 1 時 20 分', name: '八幡坂', transportType: 'walk', transportLabel: '步行散步', note: '筆直通往港灣的經典坡道，冬季點燈與雪景交織。', must: true },
-          { time: '17:00', stay: '停留 1 時 20 分', name: '金森紅磚倉庫', transportType: 'walk', transportLabel: '步行 5 分', note: '坐落在 1869 年前後建成的歷史倉庫群內，附設餐廳、雜貨店與禮品店。', must: false },
-          { time: '18:25', stay: '停留 2 時', name: '成吉思汗 羊羊亭', transportType: 'walk', transportLabel: '返回飯店休息', note: '已預約 18:30 座位。', must: true }
+          { time: '08:00', stay: '停留 30 分', name: 'APA 飯店函館站前', transportType: 'train', transportLabel: '市電 / 步行 17 分', note: '飯店出發前往元町八幡坂。', must: false },
+          { time: '08:47', stay: '停留 1 時 20 分', name: '八幡坂', transportType: 'walk', transportLabel: '步行 9 分', note: '筆直通往港灣的經典坡道，早晨雪景人潮較少好拍照。', must: true },
+          { time: '10:16', stay: '停留 1 時', name: 'Angelique Voyage', transportType: 'train', transportLabel: '市電 / 大眾運輸 18 分', note: '木板裝潢小巧甜點店，招牌賞味期限 30 分鐘千層可麗餅與生巧克力。', must: false },
+          { time: '11:34', stay: '停留 1 時', name: '迴轉壽司 根室花丸 Kiralis 函館店', transportType: 'train', transportLabel: '市電 / 大眾運輸 33 分', note: '北海道人氣必吃迴轉壽司。', must: true },
+          { time: '13:07', stay: '停留 1 時', name: 'Sports Depo 函館梁川店', transportType: 'train', transportLabel: '大眾運輸 / 步行 17 分', note: '運動與戶外保暖裝備採購。', must: false },
+          { time: '14:24', stay: '停留 1 時', name: '六花亭 五稜郭店', transportType: 'walk', transportLabel: '步行 6 分', note: '採買北海道經典伴手禮並歇腳品嚐甜點。', must: false },
+          { time: '15:30', stay: '停留 2 時', name: '五稜郭公園', transportType: 'walk', transportLabel: '步行 14 分', note: '19 世紀星形堡壘，下午可一路欣賞日落至冬季「五稜星之夢」夜間點燈。', must: true },
+          { time: '17:44', stay: '停留 1 時', name: '成吉思汗大黑屋 函館五稜郭店', transportType: 'train', transportLabel: '市電返回飯店', note: '旭川發源人氣成吉思汗烤羊肉名店。', must: true }
         ]
       },
       {
@@ -2313,7 +2312,7 @@
         theme: '洞爺湖汽船・乃之風溫泉・彩燈隧道',
         dayNote: '移動至洞爺湖溫泉鄉，入住湖景飯店洞爺乃之風並欣賞冬季光雕隧道。',
         stops: [
-          { time: '08:00', stay: '08:30 離開', name: 'APA 飯店函館站前', transportType: 'train', transportLabel: 'JR 特急 1 時 58 分', note: '退房並攜帶行李出發前往洞爺。', must: false },
+          { time: '08:00', stay: '停留 30 分', name: 'APA 飯店函館站前', transportType: 'train', transportLabel: 'JR 特急 1 時 58 分', note: '退房並攜帶行李出發前往洞爺。', must: false },
           { time: '10:28', stay: '停留 1 時', name: '洞爺火車站', transportType: 'bus', transportLabel: '巴士 / 接駁車', note: '轉乘公車或接駁前往洞爺湖溫泉街。', must: false },
           { time: '11:28', stay: '停留 1 時', name: '湖景飯店 洞爺乃之風', transportType: 'walk', transportLabel: '步行前往午餐', note: '先至飯店寄放行李。高檔湖畔飯店，免費供應早晚餐，設有 3 間餐廳與水療中心。', must: true },
           { time: '12:36', stay: '停留 2 時', name: '仙堂庵', transportType: 'walk', transportLabel: '步行 11 分', note: '品嚐洞爺湖在地風味料理。', must: false },
@@ -2326,18 +2325,18 @@
         day: 4,
         date: '12/16',
         week: '週三',
-        theme: '前往札幌・北海道神宮・大通公園與蟹座',
+        theme: '前往札幌・GARAKU 湯咖哩・大通公園與蟹座',
         dayNote: '已預約 10:00 飯店接駁巴士到札幌！早上環湖散步慢跑與吃早餐請留意收行李時間。',
         stops: [
-          { time: '08:00', stay: '10:00 離開', name: '湖景飯店 洞爺乃之風', transportType: 'bus', transportLabel: '飯店接駁巴士 2 時 30 分', note: '已預約 10:00 飯店接駁巴士到札幌，早上環湖散步與吃早餐要注意時間收行李。', must: false },
+          { time: '08:00', stay: '停留 2 時', name: '湖景飯店 洞爺乃之風', transportType: 'bus', transportLabel: '飯店接駁巴士 2 時 30 分', note: '已預約 10:00 飯店接駁巴士到札幌，早上環湖散步與吃早餐要注意時間收行李。', must: false },
           { time: '12:30', stay: '停留 20 分', name: '札幌車站', transportType: 'train', transportLabel: '地鐵 / 巴士 20 分', note: '抵達札幌市區，轉乘前往薄野。', must: false },
-          { time: '13:10', stay: '停留 30 分', name: 'APA 飯店 - 札幌薄野站前', transportType: 'walk', transportLabel: '步行前往午餐', note: '寄放行李並辦理入住手續。', must: false },
-          { time: '13:45', stay: '停留 1 時', name: '炸豬排 檍 札幌薄野店', transportType: 'train', transportLabel: '地鐵 / 巴士 25 分', note: '超人氣厚切炸豬排。', must: true },
-          { time: '15:10', stay: '停留 1 時', name: '北海道神宮', transportType: 'train', transportLabel: '地鐵 / 巴士 23 分', note: '建於 1869 年的蓊鬱神社，供奉著 4 尊神祇，其中包括明治天皇。', must: true },
-          { time: '16:33', stay: '停留 1 時', name: 'UNIQLO 札幌三越店', transportType: 'walk', transportLabel: '步行前往', note: '補齊冬季保暖衣物或購物。', must: false },
-          { time: '17:37', stay: '停留 2 時', name: '大通公園', transportType: 'train', transportLabel: '大眾運輸 14 分', note: '欣賞札幌白色燈樹節與慕尼黑聖誕市集氛圍。', must: true },
-          { time: '19:51', stay: '停留 2 時', name: '蟹座', transportType: 'walk', transportLabel: '步行 6 分', note: '13,000 日幣/人，蟹、和牛等吃到飽。已預約 20:15。', must: true },
-          { time: '21:57', stay: '停留 2 時', name: 'MEGA 唐吉訶德 札幌狸小路本店', transportType: 'walk', transportLabel: '步行回飯店', note: '夜間採買藥妝、零食與伴手禮。', must: false }
+          { time: '13:10', stay: '停留 30 分', name: 'APA 飯店 - 札幌薄野站前', transportType: 'walk', transportLabel: '步行 6 分', note: '寄放行李並辦理入住手續。', must: false },
+          { time: '13:46', stay: '停留 1 時', name: '湯咖哩 GARAKU 札幌本店', transportType: 'train', transportLabel: '地鐵 / 巴士 26 分', note: '札幌超人氣秘傳和風高湯湯咖哩名店。', must: true },
+          { time: '15:12', stay: '停留 1 時', name: '北海道神宮', transportType: 'train', transportLabel: '地鐵 / 巴士 23 分', note: '建於 1869 年的蓊鬱神社，供奉著 4 尊神祇，其中包括明治天皇。', must: true },
+          { time: '16:35', stay: '停留 1 時', name: 'UNIQLO 札幌三越店', transportType: 'walk', transportLabel: '步行 4 分', note: '補齊冬季保暖衣物或購物。', must: false },
+          { time: '17:39', stay: '停留 2 時', name: '大通公園', transportType: 'train', transportLabel: '大眾運輸 14 分', note: '欣賞札幌白色燈樹節與慕尼黑聖誕市集氛圍。', must: true },
+          { time: '19:53', stay: '停留 2 時', name: '蟹座', transportType: 'walk', transportLabel: '步行 6 分', note: '13,000 日幣/人，蟹、和牛等吃到飽。已預約 20:15。', must: true },
+          { time: '21:59', stay: '停留 2 時', name: 'MEGA 唐吉訶德 札幌狸小路本店', transportType: 'walk', transportLabel: '步行回飯店', note: '夜間採買藥妝、零食與伴手禮。', must: false }
         ]
       },
       {
@@ -2393,7 +2392,7 @@
 
     const DEFAULT_CHECKLISTS = {
       todo: [
-        { id: 't1', group: '餐廳與交通預約確認', text: '確認 Day 2 成吉思汗 羊羊亭 18:30 預約', done: true },
+        { id: 't1', group: '餐廳與交通預約確認', text: '確認 Day 2 成吉思汗大黑屋 函館五稜郭店（17:44）預約／候位', done: false },
         { id: 't2', group: '餐廳與交通預約確認', text: '確認 Day 4 洞爺乃之風 10:00 往札幌接駁巴士預約', done: true },
         { id: 't3', group: '餐廳與交通預約確認', text: '確認 Day 4 蟹座 20:15 預約（13,000 日幣/人）', done: true },
         { id: 't4', group: '餐廳與交通預約確認', text: '確認 Day 5 KLOOK 美瑛富良野一日團集合點與憑證', done: false },
@@ -2688,6 +2687,26 @@
           '已預約 18:30 座位，烤肉油煙較重，大衣外套建議善用店內置物袋或寄放。'
         ]
       },
+      '成吉思汗大黑屋 函館五稜郭店': {
+        eat: [
+          '旭川發源人氣名店，招牌「生羊肉肩里肌（生ラム）」厚切軟嫩幾乎無羊騷味',
+          '限量「厚切帶骨羊排（ラムチョップ）」與草本香料羊肉必點',
+          '免費續加的洋蔥與蔬菜盤吸滿羊油香氣，配札幌經典生啤絕配'
+        ],
+        note: [
+          '位在五稜郭公園附近，看完五稜星之夢點燈散步過來剛剛好；烤肉油煙較重，外套請善用店內置物袋。'
+        ]
+      },
+      '湯咖哩 GARAKU 札幌本店': {
+        eat: [
+          '招牌「鮮嫩燉雞腿蔬菜湯咖哩（とろとろ炙り焙煎角煮 / やわらかチキンレッグと野菜）」',
+          '和風柴魚高湯為基底，香氣濃郁溫潤；強烈建議白飯加點「炙燒起司」並搭配微辣以上更有層次',
+          '人氣配料推薦加點酥炸花椰菜（ブロッコリー）吸滿湯汁'
+        ],
+        note: [
+          '札幌排隊名店，位於薄野／大通之間地下 1 樓，建議先至現場抽整理券候位。'
+        ]
+      },
       '仙堂庵': {
         eat: [
           '洞爺湖溫泉街知名釜飯與扇貝料理（帆立貝釜飯、干貝味噌湯）',
@@ -2928,6 +2947,8 @@
       '八幡坂': '八幡坂 函館',
       '金森紅磚倉庫': '金森紅磚倉庫 函館',
       '成吉思汗 羊羊亭': '成吉思汗 羊羊亭 函館',
+      '成吉思汗大黑屋 函館五稜郭店': '成吉思汗 大黑屋 函館五稜郭店',
+      '湯咖哩 GARAKU 札幌本店': 'Soup Curry GARAKU 札幌本店',
       '仙堂庵': '仙堂庵 洞爺湖',
       '湖景飯店 洞爺乃之風': 'The Lake View TOYA Nonokaze Resort 洞爺湖',
       '大通公園': '大通公園 札幌',
@@ -2980,10 +3001,10 @@
 
     /* ===== Daily Outfit Recommendations (By Schedule Order & Arrival Times) ===== */
     const DAILY_OUTFIT_TIPS = {
-      1: '搭機穿好穿脫洋蔥式（薄發熱衣＋針織／大學 T＋好脫羽絨外套）；15:28 金森海邊聖誕樹與 20:18 函館山展望台海風強、山頂體感常達零下，隨身備妥毛帽、圍巾、防風手套與貼式暖暖包，進室內吃壽司與拉麵時方便穿脫。',
-      2: '09:06 五稜郭公園與 15:32 八幡坂結冰坡道步行時間長，務必穿防滑深紋雪靴（或備簡易冰爪）與防風保暖長褲；18:25 成吉思汗羊羊亭烤肉油煙較重，建議穿易清洗或可收進置物袋的外套。',
+      1: '搭機穿好穿脫洋蔥式（薄發熱衣＋針織／大學 T＋好脫羽絨外套）；15:37 金森海邊聖誕樹與 19:04 函館山展望台海風強、山頂體感常達零下，隨身備妥毛帽、圍巾、防風手套與貼式暖暖包，進室內吃湯咖哩與拉麵時方便穿脫。',
+      2: '08:47 八幡坂早晨結冰坡道極滑，務必穿防滑深紋雪靴（或備簡易冰爪）；15:30 五稜郭公園待到傍晚點燈體感寒冷需防風保暖長褲；17:44 成吉思汗大黑屋烤肉油煙較重，建議穿易清洗或可收進置物袋的外套。',
       3: '08:30 搭 JR 近 2 小時車廂暖氣強，內層穿透氣不悶熱的發熱衣；14:47 洞爺湖汽船甲板湖風刺骨、17:52 夜間彩燈隧道氣溫驟降，需配齊連帽防風羽絨衣、毛帽與手套；回飯店泡湯可穿易穿脫鞋襪。',
-      4: '若 08:00 環湖散步氣溫最低先穿完整保暖層；10:00 搭 2.5 小時接駁巴士與逛三越、唐吉訶德室內偏熱，洋蔥式穿法最關鍵；15:10 北海道神宮與 17:37 大通公園點燈在戶外約 2 小時，建議穿厚毛襪＋鞋底暖暖包，19:51 蟹座穿好捲袖深色上衣。',
+      4: '若 08:00 環湖散步氣溫最低先穿完整保暖層；10:00 搭 2.5 小時接駁巴士與逛三越、唐吉訶德室內偏熱，洋蔥式穿法最關鍵；15:12 北海道神宮與 17:39 大通公園點燈在戶外約 2 小時，建議穿厚毛襪＋鞋底暖暖包，19:53 蟹座穿好捲袖深色上衣。',
       5: '全行程最冷日！美瑛富良野內陸氣溫常比札幌低 5°C 以上，15:36 白金青池與 17:23 森林精靈露台入夜極寒。請採最強配置：超極暖發熱衣＋刷毛中層＋防風防水長版羽絨衣、刷毛防風褲、防滑雪靴、毛帽圍巾觸控手套與充足暖暖包。',
       6: '10:01 小樽水族館臨海看企鵝散步風大、15:31 小樽運河黃昏體感冷，務必加強防風外套與防滑鞋底；13:18 堺町通與 18:28 狸小路屬室內與遮棚商店街暖氣足，內層勿過厚避免流汗著涼，可帶輕便袋收納圍巾手套。',
       7: '08:00 拖行李走雪地至車站仍需穿防滑鞋與保暖外套，但 09:31 進新千歲機場與 15:35 返抵台灣溫差大；建議穿「薄長袖／薄發熱衣＋好收納壓縮羽絨衣」，抵台脫掉外層即可舒適返家。'
